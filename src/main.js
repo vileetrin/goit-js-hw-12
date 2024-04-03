@@ -1,29 +1,34 @@
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
 
-import SimpleLightbox from 'simplelightbox';
-import 'simplelightbox/dist/simple-lightbox.min.css';
-
 import { fetchImages } from './js/pixaby-api.js';
 import { createMarkup } from './js/render-functions.js';
 
 const form = document.querySelector('.form');
 const gallery = document.querySelector('.gallery');
 const loader = document.querySelector('.loader');
+const btn = document.querySelector('.load-button');
+
+
+let page = 1;
+let searchInput;
+let maxPage = 0;
 
 form.addEventListener('submit', onButtonClick);
+btn.addEventListener('click', onLoadBtnClick);
 
-function onButtonClick(event) {
+async function onButtonClick(event) {
   event.preventDefault();
 
   gallery.innerHTML = '';
+  page = 1;
 
-  loader.style.display = 'inline-block';
+  loader.classList.remove('hidden');
 
-  const searchInput = form.elements.searchInput.value.trim();
+  searchInput = form.elements.searchInput.value.trim();
 
   if (searchInput === '') {
-    loader.style.display = 'none';
+    loader.classList.add('hidden');
     iziToast.error({
       title: 'Error',
       message: 'Please enter word to search!',
@@ -32,22 +37,55 @@ function onButtonClick(event) {
     return;
   }
 
-  fetchImages(searchInput)
-    .then(data => {
-      if (data.length === 0) {
-        iziToast.error({
-          title: 'Error',
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-          position: 'topRight',
-        });
-        return;
-      }
-      createMarkup(data, gallery);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-    }).finally(() => {
-            loader.style.display = 'none';
-        });;
+  try {
+    const data = await fetchImages(searchInput, page);
+    maxPage = Math.ceil(data.total / 15);
+
+    if (data.hits.length === 0) {
+      iziToast.error({
+        title: 'Error',
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+        position: 'topRight',
+      });
+      return;
+    }
+
+    createMarkup(data.hits, gallery);
+    getBoundingClientRect()
+    checkLoadButton()
+  } catch (error) {
+    console.error('Error:', error);
+  } finally {
+    loader.classList.add('hidden');;
+  }
+}
+
+
+async function onLoadBtnClick() {
+  const data = await fetchImages(searchInput, (page += 1));
+  createMarkup(data.hits, gallery);
+  getBoundingClientRect();
+  checkLoadButton();
+}
+
+
+function checkLoadButton() {
+  if (page >= maxPage) {
+    btn.classList.add('hidden');
+    iziToast.error({
+      title: 'Error',
+      message: 'We\'re sorry, but you\'ve reached the end of search results.',
+      position: 'topRight',
+    });
+  } else {
+    btn.classList.remove('hidden');
+  }
+}
+
+function getBoundingClientRect() {
+  scrollBy({
+    top: 500,
+    behavior: 'smooth'
+  })
 }

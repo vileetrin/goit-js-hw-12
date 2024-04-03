@@ -1,6 +1,8 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 
+const lightbox = new SimpleLightbox('.gallery a', {});
+
 export function createMarkup(hits, gallery) {
   const markup = hits
     .map(
@@ -33,8 +35,6 @@ export function createMarkup(hits, gallery) {
     )
     .join('');
 
-    gallery.insertAdjacentHTML('beforeend', markup);
-    const lightbox = new SimpleLightbox('.gallery a');
+  gallery.insertAdjacentHTML('beforeend', markup);
   lightbox.refresh();
-  
 }

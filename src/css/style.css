@@ -105,3 +105,14 @@ p {
     transform: rotate(360deg);
   }
 }
+
+.hidden {
+  display: none;
+  opacity: 0;
+}
+
+.load-button {
+  position: absolute;
+  margin-top: 15px;
+  left: 46%;
+}
