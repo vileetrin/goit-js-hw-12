@@ -22,7 +22,11 @@ export async function fetchImages(keyword, page) {
     
     return response.data;
   } catch (error) {
-    console.error('Error:', error);
+    iziToast.error({
+      title: 'Error',
+      message: 'Error during API call',
+      position: 'topRight',
+    });
     throw error;
   }
 }

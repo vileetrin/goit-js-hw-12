@@ -48,12 +48,13 @@ async function onButtonClick(event) {
           'Sorry, there are no images matching your search query. Please try again!',
         position: 'topRight',
       });
+      btn.classList.add('hidden');
       return;
     }
 
     createMarkup(data.hits, gallery);
-    getBoundingClientRect()
-    checkLoadButton()
+    getBoundingClientRect();
+    checkLoadButton();
   } catch (error) {
     console.error('Error:', error);
   } finally {
