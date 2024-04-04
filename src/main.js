@@ -56,7 +56,12 @@ async function onButtonClick(event) {
     getBoundingClientRect();
     checkLoadButton();
   } catch (error) {
-    console.error('Error:', error);
+    iziToast.error({
+        title: 'Error',
+        message:
+          'Error',
+        position: 'topRight',
+      });
   } finally {
     loader.classList.add('hidden');;
   }
